@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SPAREN</title>
 
 <style>
+
 body{
 font-family:-apple-system;
 background:#0f172a;
@@ -27,7 +29,7 @@ padding:16px;
 .card{
 background:#1e293b;
 border-radius:20px;
-padding:18px;
+padding:20px;
 margin-bottom:14px;
 }
 
@@ -37,7 +39,7 @@ font-size:14px;
 }
 
 .big{
-font-size:34px;
+font-size:36px;
 font-weight:600;
 margin-top:6px;
 }
@@ -45,35 +47,24 @@ margin-top:6px;
 button{
 background:#34c759;
 border:none;
-padding:10px 14px;
+padding:12px;
 border-radius:10px;
 margin-top:10px;
+width:100%;
+font-size:16px;
 }
 
 input{
 width:100%;
-padding:10px;
+padding:12px;
 border-radius:10px;
 border:none;
-margin-top:8px;
+margin-top:10px;
+font-size:16px;
 }
 
-.nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:#020617;
-display:flex;
-justify-content:space-around;
-padding:12px;
-}
-
-.nav button{
-background:none;
-color:white;
-}
 </style>
+
 </head>
 
 <body>
@@ -83,16 +74,94 @@ color:white;
 <div class="container">
 
 <div class="card">
+
 <div class="title">Nog te besteden deze maand</div>
-<div class="big">€517</div>
+
+<div class="big">€<span id="rest">517</span></div>
+
 </div>
 
 <div class="card">
+
 <div class="title">Weekbudget</div>
-<div class="big">€129</div>
+
+<div class="big">€<span id="week">129</span></div>
+
+</div>
+
+<div class="card">
+
+<div class="title">Uitgave toevoegen</div>
+
+<input id="bedrag" placeholder="bedrag">
+
+<button onclick="uitgave()">Toevoegen</button>
+
+</div>
+
+<div class="card">
+
+<div class="title">Uitgaven</div>
+
+<div id="lijst"></div>
+
 </div>
 
 </div>
+
+<script>
+
+let maandBudget = 517
+let besteed = Number(localStorage.getItem("besteed") || 0)
+
+let uitgaven = JSON.parse(localStorage.getItem("uitgaven") || "[]")
+
+function update(){
+
+let rest = maandBudget - besteed
+
+document.getElementById("rest").innerText = rest
+
+let vandaag = new Date()
+
+let dag = vandaag.getDate()
+
+let weken = Math.ceil((30 - dag) / 7)
+
+if(weken < 1) weken = 1
+
+let weekBudget = Math.round(rest / weken)
+
+document.getElementById("week").innerText = weekBudget
+
+let html=""
+
+uitgaven.forEach(u=>{
+html += "€"+u+"<br>"
+})
+
+document.getElementById("lijst").innerHTML = html
+
+}
+
+function uitgave(){
+
+let bedrag = Number(document.getElementById("bedrag").value)
+
+besteed += bedrag
+
+uitgaven.push(bedrag)
+
+localStorage.setItem("besteed", besteed)
+localStorage.setItem("uitgaven", JSON.stringify(uitgaven))
+
+update()
+
+}
+
+update()
+
+</script>
 
 </body>
 </html>
